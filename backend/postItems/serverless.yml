@@ -1,0 +1,24 @@
+service: sls-create-item
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    restApiId: ${cf:sls-api-gateway-dev.apiGatewayId}
+    restApiRootResourceId: ${cf:sls-api-gateway-dev.apiGatewayResourceId}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+      Resource: ${cf:sls-dynamo-db-${opt:stage}.ItemTableArn}
+
+functions:
+  api:
+    handler: lambda.handler
+    environment: 
+      TABLE_NAME: sls-items
+    events:
+      - http:
+          path: /item-create
+          method: post
+          cors: true

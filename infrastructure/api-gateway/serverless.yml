@@ -1,0 +1,24 @@
+service: sls-api-gateway
+
+provider: aws
+functions:
+
+resources:
+  Resources:
+    APIGateway:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: sls-api-gateway
+
+  Outputs:
+    apiGatewayResourceId:
+      Description: The root resource id of the api gateway
+      Value: !GetAtt APIGateway.RootResourceId
+      Export:
+        Name: sls-api-gateway-resource-id
+    apiGatewayId:
+      Description: The id of the api gateway
+      Value: !Ref APIGateway
+      Export:
+        Name: sls-api-gateway-id
+    

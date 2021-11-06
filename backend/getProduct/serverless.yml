@@ -1,0 +1,28 @@
+service: sls-get-product
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    restApiId: ${cf:sls-api-gateway-dev.apiGatewayId}
+    restApiRootResourceId: ${cf:sls-api-gateway-dev.apiGatewayResourceId}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+      Resource: ${cf:sls-dynamo-db-${opt:stage}.ProductTableArn}
+    - Effect: "Allow"
+      Action:
+        - lambda:InvokeFunction
+      Resource: "*"
+
+functions:
+  api:
+    handler: lambda.handler
+    environment: 
+      TABLE_NAME: sls-products
+    events:
+      - http:
+          path: /product-get/{productId}
+          method: get
+          cors: true

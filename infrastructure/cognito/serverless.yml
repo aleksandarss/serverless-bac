@@ -1,0 +1,29 @@
+service: sls-cognito
+
+provider: aws
+functions: 
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties: 
+        UserPoolName: sls-userpool
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref UserPool
+        SupportedIdentityProviders:
+          - COGNITO
+
+  Outputs:
+    userPoolId:
+      Description: The id of user pool
+      Value: !Ref UserPool
+      Export:
+        Name: sls-userpool-id
+    userPoolClientId:
+      Description: The id of the user pool client
+      Value: !Ref UserPoolClient
+      Export:
+        Name: sls-userpool-client-id
