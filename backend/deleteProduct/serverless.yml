@@ -13,5 +13,5 @@ functions:
     events:
       - http:
           path: /
-          method: get
+          method: delete
           cors: true
