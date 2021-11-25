@@ -21,6 +21,7 @@ jobs:
           
           echo "========== check paths of changed files =========="
           git diff --name-only HEAD^ HEAD > files.txt
+          cat files.txt
           while IFS= read -r file
           do
             echo $file
@@ -32,6 +33,14 @@ jobs:
               echo "::set-output name=run_job::true"
             fi
           done < files.txt
+
+  # build_backend:
+  #   name: BuildBackend
+  #   needs: check
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+
 
   job_for_env1:
     name: Job for env1
