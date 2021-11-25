@@ -9,6 +9,23 @@ resources:
       Type: AWS::ApiGateway::RestApi
       Properties:
         Name: sls-api-gateway
+    ApiGatewayauthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        IdentitySource: method.request.header.Authorization
+        RestApiId: !Ref APIGateway
+        Type: COGNITO_USER_POOLS
+        Name: ApiGatewayAuthorizer
+        ProviderARNs:
+          - Fn::Join:
+            - ':'
+            - - 'arn:aws:cognito-idp'
+              - Ref: 'AWS::Region'
+              - Ref: 'AWS::AccountId'
+              - !Join
+                - '/'
+                - - 'userpool'
+                  - ${cf:sls-cognito-${opt:stage}.userPoolId}
 
   Outputs:
     apiGatewayResourceId:
