@@ -2,35 +2,46 @@ name: Serverless deploy pipeline
 on: [push]
 
 jobs:
-  changedfiles:
-    runs-on: ubuntu-latest
-    # Map a step output to a job output
+  check:
+    name: Check changed files
     outputs:
-      all: ${{ steps.changes.outputs.all}}
-      ts: ${{ steps.changes.outputs.ts }}
+      run_job: ${{ steps.check_files.outputs.run_job }}
+    runs-on: ubuntu-latest
     steps:
-        # Make sure we have some code to diff.
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
-      - name: Get changed files
-        id: changes
-        # Set outputs using the command.
+
+      - name: check files
+        id: check_files
         run: |
-          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-          echo "::set-output name=ts::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .ts$ | xargs)"
-  lint:
+          echo "=============== list changed files ==============="
+          git diff --name-only HEAD^ HEAD
+          
+          echo "========== check paths of changed files =========="
+          git diff --name-only HEAD^ HEAD > files.txt
+          while IFS= read -r file
+          do
+            echo $file
+            if [[ $file != "subdir/env1/"* ]]; then
+              echo "This file is not under the directory 'subdir/env1'."
+              echo "::set-output name=run_job::false"
+              break
+            else
+              echo "::set-output name=run_job::true"
+            fi
+          done < files.txt
+
+  job_for_env1:
+    name: Job for env1
+    needs: check
+    if: needs.check.outputs.run_job == 'true'
     runs-on: ubuntu-latest
-    # require the first job to have ran
-    needs: changedfiles
-    # only run there are changed files
-    # if: ${{needs.changedfiles.outputs.ts}}
     steps:
-      - name: echo changed files
-        run: echo ${{needs.changedfiles.outputs.ts}}
-      - name: echo all
-        run: echo ${{needs.changedfiles.outputs.all}}
+      - name: run for env1
+        run: echo "Updates made to env1"
+
   deploy-infra-dependencies:
     runs-on: ubuntu-latest
     steps:
