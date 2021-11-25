@@ -6,6 +6,7 @@ jobs:
     name: Check changed files
     outputs:
       run_job: ${{ steps.check_files.outputs.run_job }}
+      matrix: ${{ steps.check_files.outputs.matrix }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,6 +26,7 @@ jobs:
           while IFS= read -r file
           do
             echo $file
+
             if [[ $file != "subdir/env1/"* ]]; then
               echo "This file is not under the directory 'subdir/env1'."
               echo "::set-output name=run_job::false"
@@ -33,6 +35,7 @@ jobs:
               echo "::set-output name=run_job::true"
             fi
           done < files.txt
+          echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
 
   # build_backend:
   #   name: BuildBackend
@@ -45,11 +48,11 @@ jobs:
   job_for_env1:
     name: Job for env1
     needs: check
-    if: needs.check.outputs.run_job == 'true'
+    # if: needs.check.outputs.run_job == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: run for env1
-        run: echo "Updates made to env1"
+        run: echo ${{fromJSON(needs.check.outputs.matrix)}}
 
   deploy-infra-dependencies:
     runs-on: ubuntu-latest
