@@ -1,4 +1,4 @@
-service: sls-get-items
+service: sls-delete-product
 
 provider:
   name: aws
