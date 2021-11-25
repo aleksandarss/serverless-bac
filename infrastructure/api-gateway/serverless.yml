@@ -38,4 +38,3 @@ resources:
       Value: !Ref APIGateway
       Export:
         Name: sls-api-gateway-id
-    
