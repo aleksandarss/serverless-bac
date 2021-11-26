@@ -24,9 +24,10 @@ jobs:
           git diff --name-only HEAD^ HEAD > files.txt
           cat files.txt
           while IFS= read -r file
+          changed_files="["
           do
             echo $file
-
+            changed_files="$changed_files$file, "
             if [[ $file != "subdir/env1/"* ]]; then
               echo "This file is not under the directory 'subdir/env1'."
               echo "::set-output name=run_job::false"
@@ -35,7 +36,10 @@ jobs:
               echo "::set-output name=run_job::true"
             fi
           done < files.txt
-          echo "::set-output name=matrix::[1, 2, 3]"
+          $changed_files=$(echo $changed_files | sed 's/.$//')
+          $changed_files="$changed_files]"
+          echo $changed_files
+          echo "::set-output name=matrix::$changed_files"
 
   # build_backend:
   #   name: BuildBackend

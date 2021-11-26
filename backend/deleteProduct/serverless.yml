@@ -15,4 +15,3 @@ functions:
           path: /
           method: delete
           cors: true
-          
