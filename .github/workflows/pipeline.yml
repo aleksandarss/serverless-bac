@@ -23,21 +23,15 @@ jobs:
           echo "========== check paths of changed files =========="
           git diff --name-only HEAD^ HEAD > files.txt
           cat files.txt
-          while IFS= read -r file
           changed_files="["
+          while IFS= read -r file
           do
-            echo $file
-            changed_files="$changed_files$file, "
-            if [[ $file != "subdir/env1/"* ]]; then
-              echo "This file is not under the directory 'subdir/env1'."
-              echo "::set-output name=run_job::false"
-              break
-            else
-              echo "::set-output name=run_job::true"
-            fi
+              echo $file
+              changed_files+="${file}, "
           done < files.txt
-          $changed_files=$(echo $changed_files | sed 's/.$//')
-          $changed_files="$changed_files]"
+          echo $changed_files
+          changed_files=$(echo $changed_files | sed 's/.$//')
+          changed_files="$changed_files]"
           echo $changed_files
           echo "::set-output name=matrix::$changed_files"
 
