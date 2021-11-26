@@ -6,7 +6,7 @@ jobs:
     name: Check changed files
     outputs:
       run_job: ${{ steps.check_files.outputs.run_job }}
-      matrix: ${{ toJson(steps.check_files.outputs.matrix) }}
+      matrix: ${{ steps.check_files.outputs.matrix }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,7 +34,8 @@ jobs:
           changed_files="$changed_files]"
           echo $changed_files
           # echo "::set-output name=matrix::$changed_files"
-          echo "::set-output name=matrix::[\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]"
+          echo "::set-output name=matrix::{\"files\": [.github/workflows/pipeline.yml, backend/getItems/serverless.yml, backend/getProduct/serverless.yml]}"
+          
 
   # build_backend:
   #   name: BuildBackend
@@ -54,7 +55,8 @@ jobs:
         file: ${{ fromJson(needs.check.outputs.matrix) }}
     steps:
       - name: run for env1
-        run: echo ${{ matrix.file }}
+        run: |
+          echo ${{ matrix.file }}
 
   deploy-infra-dependencies:
     runs-on: ubuntu-latest
