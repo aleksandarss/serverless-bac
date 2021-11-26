@@ -27,3 +27,4 @@ resources:
       Value: !Ref UserPoolClient
       Export:
         Name: sls-userpool-client-id
+        

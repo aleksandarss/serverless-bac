@@ -37,11 +37,11 @@ jobs:
               then
                 file=${file%/*}
                 backend_files+="\"${file}\", "
-              elif [[ $file == infrastructure-deps ]];
+              elif [[ $file == infrastructure-deps* ]];
               then
                 file=${file%/*}
                 infra_deps_files+="\"${file}\", "
-              elif [[ $file == infrastructure ]];
+              elif [[ $file == infrastructure* ]];
               then
                 file=${file%/*}
                 infra_files="\"${file}\", "
