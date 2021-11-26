@@ -1,0 +1,14 @@
+name: Serverless deploy pipeline
+on: [workflow_dispatch]
+
+jobs:
+  deploy_backend:
+    name: Deploy backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: build backend
+        run: ./deployment/build_backend.sh
+
+    
