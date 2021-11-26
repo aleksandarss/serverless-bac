@@ -63,6 +63,7 @@ jobs:
           then
             infra_deps_files=$(echo $infra_deps_files | sed 's/.$//')
             infra_deps_files="{\"file\": $infra_deps_files]}"
+            echo $infra_deps_files
             echo "::set-output name=infra_deps_jobs::$infra_deps_files"
           fi
 
