@@ -6,7 +6,7 @@ jobs:
     name: Check changed files
     outputs:
       run_job: ${{ steps.check_files.outputs.run_job }}
-      matrix: ${{ steps.check_files.outputs.matrix }}
+      matrix: ${{ toJson(steps.check_files.outputs.matrix) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -46,14 +46,14 @@ jobs:
   job_for_env1:
     name: Job for env1
     needs: check
-    # if: needs.check.outputs.run_job == 'true'
+    # if: needs.check.outputs.run_job == 'true' 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        file: ${{needs.check.outputs.matrix}}
+        file: ${{ fromJson(needs.check.outputs.matrix) }}
     steps:
       - name: run for env1
-        run: echo ${{matrix.file}}
+        run: echo ${{ matrix.file }}
 
   deploy-infra-dependencies:
     runs-on: ubuntu-latest
