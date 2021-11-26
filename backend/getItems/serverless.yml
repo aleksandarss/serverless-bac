@@ -25,4 +25,3 @@ functions:
           authorizer:
             name: ${self:service}-authorizer
             arn: arn:aws:cognito-idp:us-east-1:949860833023:userpool/us-east-1_RG37Adt11
-            

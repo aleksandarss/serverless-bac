@@ -27,14 +27,14 @@ jobs:
           while IFS= read -r file
           do
               echo $file
-              changed_files+="${file}, "
+              changed_files+="\"${file}\", "
           done < files.txt
           echo $changed_files
           changed_files=$(echo $changed_files | sed 's/.$//')
-          changed_files="$changed_files]"
+          changed_files="{\"file\": $changed_files]}"
           echo $changed_files
-          # echo "::set-output name=matrix::$changed_files"
-          echo "::set-output name=matrix::{\"file\": [\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]}"
+          echo "::set-output name=matrix::$changed_files"
+          # echo "::set-output name=matrix::{\"file\": [\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]}"
           
 
   # build_backend:
