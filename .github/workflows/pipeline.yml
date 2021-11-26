@@ -34,7 +34,7 @@ jobs:
           changed_files="$changed_files]"
           echo $changed_files
           # echo "::set-output name=matrix::$changed_files"
-          echo "::set-output name=matrix::{\"files\": [\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]}"
+          echo "::set-output name=matrix::{\"file\": [\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]}"
           
 
   # build_backend:
@@ -51,8 +51,7 @@ jobs:
     # if: needs.check.outputs.run_job == 'true' 
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        file: ${{ fromJson(needs.check.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.check.outputs.matrix) }}
     steps:
       - name: run for env1
         run: |
