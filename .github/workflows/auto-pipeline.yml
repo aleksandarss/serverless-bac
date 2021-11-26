@@ -1,5 +1,5 @@
-name: Serverless deploy pipeline
-on: [push]
+name: Serverless auto deploy pipeline
+on: [workflow_dispatch]
 
 jobs:
   check:

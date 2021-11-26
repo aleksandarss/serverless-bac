@@ -1,4 +1,4 @@
-name: Serverless deploy pipeline
+name: Serverless manual deploy pipeline
 on: [workflow_dispatch]
 
 jobs:
