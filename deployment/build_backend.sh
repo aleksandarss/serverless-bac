@@ -8,4 +8,3 @@ for i in */backend/;
           eval "npm install --production" || exit 1;
           cd ..
      done
-
