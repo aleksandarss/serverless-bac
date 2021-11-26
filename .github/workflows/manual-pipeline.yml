@@ -15,8 +15,8 @@ jobs:
       - name: deploy backend
         run: | 
           npm install -g serverless
-          chmod 777 ./deployment/deploy_backend.sh
-          ./deployment/deploy_backend.sh
+          chmod 777 ./deployment/serverless_deploy.sh
+          ./deployment/serverless_deploy.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
