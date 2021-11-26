@@ -9,6 +9,8 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v2
       - name: build backend
-        run: ./deployment/build_backend.sh
+        run: |
+          chmod 777 ./deployment/build_backend.sh
+          ./deployment/build_backend.sh
 
     
