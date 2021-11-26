@@ -7,6 +7,9 @@ jobs:
     outputs:
       run_job: ${{ steps.check_files.outputs.run_job }}
       matrix: ${{ steps.check_files.outputs.matrix }}
+      backend_jobs: ${{ steps.check_files.outputs.backend_jobs }}
+      infra_deps_jobs: ${{ steps.check_files.outputs.infra_deps_jobs }}
+      infra_jobs: ${{ steps.check_files.outputs.infra_jobs }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -24,16 +27,53 @@ jobs:
           git diff --name-only HEAD^ HEAD > files.txt
           cat files.txt
           changed_files="["
+          backend_files="["
+          infra_deps_files="["
+          infra_files="["
           while IFS= read -r file
           do
               echo $file
-              changed_files+="\"${file}\", "
+              if [[ $file == backend* ]];
+              then
+                file=${file%/*}
+                backend_files+="\"${file}\", "
+              elif [[ $file == infrastructure-deps ]];
+              then
+                file=${file%/*}
+                infra_deps_files+="\"${file}\", "
+              elif [[ $file == infrastructure ]];
+              then
+                file=${file%/*}
+                infra_files="\"${file}\", "
+              fi
+              
+              # changed_files+="\"${file}\", "
           done < files.txt
-          echo $changed_files
-          changed_files=$(echo $changed_files | sed 's/.$//')
-          changed_files="{\"file\": $changed_files]}"
-          echo $changed_files
-          echo "::set-output name=matrix::$changed_files"
+          # changed_files=$(echo $changed_files | sed 's/.$//')
+          # changed_files="{\"file\": $changed_files]}"
+
+          if [[ ${#backend_files} > 2 ]];
+          then
+            backend_files=$(echo $backend_files | sed 's/.$//')
+            backend_files="{\"file\": $backend_files]}"
+            echo "::set-output name=backend_jobs::$backend_files"
+          fi
+
+          if [[ ${#infra_deps_files} > 2 ]];
+          then
+            infra_deps_files=$(echo $infra_deps_files | sed 's/.$//')
+            infra_deps_files="{\"file\": $infra_deps_files]}"
+            echo "::set-output name=infra_deps_jobs::$infra_deps_files"
+          fi
+
+          if [[ ${#infra_files} > 2 ]];
+          then
+            infra_files=$(echo $infra_files | sed 's/.$//')
+            infra_files="{\"file\": $infra_files]}"
+            echo "::set-output name=infra_jobs::$infra_files"
+          fi
+
+          # echo "::set-output name=matrix::$changed_files"
           # echo "::set-output name=matrix::{\"file\": [\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]}"
           
 
@@ -43,7 +83,24 @@ jobs:
   #   runs-on: ubuntu-latest
   #   strategy:
   #     matrix:
-
+  
+  deploy_infra_deps:
+    name: Deploy infra deps
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.check.outputs.infra_deps_jobs) }}
+    steps:
+      - name: checkout infra deps
+        uses: actions/checkout@v2
+      - name: serverless deploy of infra deps
+        uses: serverless/github-action@master
+        with:
+          args: deploy --stage dev --config /${{ matrix.file }}/serverless.yml
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
 
   job_for_env1:
     name: Job for env1
