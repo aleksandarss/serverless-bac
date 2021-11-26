@@ -35,7 +35,7 @@ jobs:
               echo "::set-output name=run_job::true"
             fi
           done < files.txt
-          echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+          echo "::set-output name=matrix::[1, 2, 3]"
 
   # build_backend:
   #   name: BuildBackend
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: run for env1
-        run: echo ${{fromJSON(needs.check.outputs.matrix)}}
+        run: echo ${{needs.check.outputs.matrix}}
 
   deploy-infra-dependencies:
     runs-on: ubuntu-latest
