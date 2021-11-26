@@ -12,5 +12,15 @@ jobs:
         run: |
           chmod 777 ./deployment/build_backend.sh
           ./deployment/build_backend.sh
+      - name: deploy backend
+        run: | 
+          npm install -g serverless
+          chmod 777 ./deployment/deploy_backend.sh
+          ./deployment/deploy_backend.sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
+          FOLDER: 'backend/'
 
     
