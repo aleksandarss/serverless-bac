@@ -48,9 +48,12 @@ jobs:
     needs: check
     # if: needs.check.outputs.run_job == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{needs.check.outputs.matrix}}
     steps:
       - name: run for env1
-        run: echo ${{needs.check.outputs.matrix}}
+        run: echo ${{matrix.file}}
 
   deploy-infra-dependencies:
     runs-on: ubuntu-latest

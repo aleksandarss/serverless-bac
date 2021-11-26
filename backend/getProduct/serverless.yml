@@ -26,3 +26,4 @@ functions:
           path: /product-get/{productId}
           method: get
           cors: true
+          
