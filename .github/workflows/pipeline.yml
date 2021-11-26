@@ -34,7 +34,7 @@ jobs:
           changed_files="$changed_files]"
           echo $changed_files
           # echo "::set-output name=matrix::$changed_files"
-          echo "::set-output name=matrix::[.github/workflows/pipeline.yml, backend/getItems/serverless.yml, backend/getProduct/serverless.yml]"
+          echo "::set-output name=matrix::[\".github/workflows/pipeline.yml\", \"backend/getItems/serverless.yml\", \"backend/getProduct/serverless.yml\"]"
 
   # build_backend:
   #   name: BuildBackend
