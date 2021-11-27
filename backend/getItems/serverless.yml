@@ -24,4 +24,4 @@ functions:
           cors: true
           authorizer:
             name: ${self:service}-authorizer
-            arn: ${cf:sls-cognito-${opt:stage}.sls-userpool-arn}
+            arn: ${cf:sls-cognito-${opt:stage}.userPoolArn}
