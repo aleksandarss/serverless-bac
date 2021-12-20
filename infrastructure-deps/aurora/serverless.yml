@@ -1,0 +1,24 @@
+service: sls-aurora-v2
+
+provider: aws
+functions: 
+
+resources:
+  Resources:
+    RDSCluster:
+      Type: 'AWS::RDS::DBCluster'
+      Properties:
+        MasterUsername: postgres
+        MasterUserPassword: postgres
+        DBClusterIdentifier: aurora-postgresql-cluster
+        Engine: aurora-postgresql
+        EngineVersion: '10.14'
+        DBClusterParameterGroupName: default.aurora-postgresql10
+    RDSBDInstance:
+      Type: 'AWS::RDS::DBInstance'
+      Properties:
+        DBInstanceIdentifier: aurora-postgresql-instance
+        Engine: aurora-postgresql
+        DBClusterIdentifier: !Ref RDSCluster
+        PubliclyAccessible: 'true'
+        DBInstanceClass: db.t3.small
