@@ -1,8 +1,11 @@
-service: sls-aurora-v2
+service: sls-aurora-v4
 
 provider: aws
 functions: 
 
+# TODO:
+# jumpbox creation (maybe ...)
+# Migration
 resources:
   Resources:
     RDSCluster:
@@ -12,13 +15,10 @@ resources:
         MasterUserPassword: postgres
         DBClusterIdentifier: aurora-postgresql-cluster
         Engine: aurora-postgresql
+        EngineMode: serverless
         EngineVersion: '10.14'
         DBClusterParameterGroupName: default.aurora-postgresql10
-    RDSBDInstance:
-      Type: 'AWS::RDS::DBInstance'
-      Properties:
-        DBInstanceIdentifier: aurora-postgresql-instance
-        Engine: aurora-postgresql
-        DBClusterIdentifier: !Ref RDSCluster
-        PubliclyAccessible: 'true'
-        DBInstanceClass: db.t3.small
+        ScalingConfiguration:
+          AutoPause: true
+          MinCapacity: 2
+          MaxCapacity: 4

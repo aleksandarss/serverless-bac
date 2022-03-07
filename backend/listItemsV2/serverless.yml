@@ -1,0 +1,24 @@
+service: sls-list-items-v2
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    restApiId: ${cf:sls-api-gateway-dev.apiGatewayId}
+    restApiRootResourceId: ${cf:sls-api-gateway-dev.apiGatewayResourceId}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Scan
+      Resource: ${cf:sls-dynamo-db-${opt:stage}.ItemTableArn}
+
+functions:
+  api:
+    handler: lambda.handler
+    environment: 
+      TABLE_NAME: sls-items
+    events:
+      - http:
+          path: /v2/item-list
+          method: get
+          cors: true

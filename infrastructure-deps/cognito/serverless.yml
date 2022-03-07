@@ -1,4 +1,4 @@
-service: sls-cognito
+service: sls-cognito-v01
 
 provider: aws
 functions: 
@@ -15,6 +15,23 @@ resources:
         UserPoolId: !Ref UserPool
         SupportedIdentityProviders:
           - COGNITO
+        AllowedOAuthFlows:
+          - implicit
+        GenerateSecret: true
+        ExplicitAuthFlows: 
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        AllowedOAuthScopes:
+          - openid
+        CallbackURLs:
+          - http://localhost
+        LogoutURLs:
+          - http://localhost
+    UserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        UserPoolId: !Ref UserPool 
+        Domain: "test-user-pool-domain-123"
 
   Outputs:
     userPoolId:

@@ -1,0 +1,3 @@
+.github/workflows/pipeline.yml
+backend/deleteProduct/serverless.yml
+backend/getItems/serverless.yml
