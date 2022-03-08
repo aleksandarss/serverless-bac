@@ -8,12 +8,28 @@ functions:
 # Migration
 resources:
   Resources:
+    ClusterSecret:
+      Type: AWS::SecretsManager::Secret
+      Properties:
+        Name: AuroraClusterSecret
+        Description: 'This is the Master secret for the RDS Aurora cluster'
+        GenerateSecretString:
+          SecretStringTemplate: '{"username": "demo"}'
+          GenerateStringKey: 'password'
+          PasswordLength: 16
+          ExcludeCharacters: '"@/\'
+    SecretRDSInstanceAttachment:
+      Type: AWS::SecretsManager::SecretTargetAttachment
+      Properties:
+        SecretId: !Ref ClusterSecret
+        TargetId: !Ref RDSCluster
+        TargetType: AWS::RDS::DBCluster
     RDSCluster:
       Type: 'AWS::RDS::DBCluster'
       Properties:
-        MasterUsername: postgres
-        MasterUserPassword: postgres
-        DBClusterIdentifier: aurora-postgresql-cluster
+        MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref ClusterSecret, ':SecretString:username}}' ]]
+        MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref ClusterSecret, ':SecretString:password}}' ]]
+        DBClusterIdentifier: aurora-postgresql-cluster-v1
         Engine: aurora-postgresql
         EngineMode: serverless
         EngineVersion: '10.14'
@@ -22,3 +38,13 @@ resources:
           AutoPause: true
           MinCapacity: 2
           MaxCapacity: 4
+
+  Outputs:
+    rdsCluster: 
+      Value: !Ref RDSCluster
+      Export:
+        Name: rds-cluster-name
+    rdsClusterSecretArn:
+      Value: !Ref ClusterSecret
+      Export:
+        Name: rds-cluster-secret
