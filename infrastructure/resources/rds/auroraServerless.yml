@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  DBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: ${self:provider.stackName}-DBSubnetGroup
+      SubnetIds:
+        - !Ref SubnetAPrivate	
+        - !Ref SubnetBPrivate
+      Tags:
+        - Key: Project
+          Value: sasa-project
+
+  ClusterSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: AuroraClusterSecret
+      Description: 'This is the Master secret for the RDS Aurora cluster'
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "demo"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+      Tags:
+      - Key: Project
+        Value: sasa-project
+
+  SecretRDSInstanceAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId: !Ref ClusterSecret
+      TargetId: !Ref RDSCluster
+      TargetType: AWS::RDS::DBCluster
+
+  RDSCluster:
+    Type: 'AWS::RDS::DBCluster'
+    Properties:
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref ClusterSecret, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref ClusterSecret, ':SecretString:password}}' ]]
+      DBClusterIdentifier: aurora-postgresql-cluster-v1
+      Engine: aurora-postgresql
+      EngineMode: serverless
+      EngineVersion: '10.14'
+      DBClusterParameterGroupName: default.aurora-postgresql10
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      EnableHttpEndpoint: true
+      ScalingConfiguration:
+        AutoPause: true
+        MinCapacity: 2
+        MaxCapacity: 4
+      Tags:
+        - Key: Project
+          Value: sasa-project
+
+Outputs:
+  rdsCluster: 
+    Value: !Ref RDSCluster
+    Export:
+      Name: rds-cluster-name
+  rdsClusterSecretArn:
+    Value: !Ref ClusterSecret
+    Export:
+      Name: rds-cluster-secret

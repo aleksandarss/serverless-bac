@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  APIGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: elearning-api-gateway
+
+Outputs:
+  apiGatewayResourceId:
+    Description: The root resource id of the api gateway
+    Value: !GetAtt APIGateway.RootResourceId
+    Export:
+      Name: elearning-api-gateway-resource-id
+  apiGatewayId:
+    Description: The id of the api gateway
+    Value: !Ref APIGateway
+    Export:
+      Name: elearning-api-gateway-id

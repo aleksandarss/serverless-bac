@@ -1,7 +1,3 @@
-- Create DB schema
-- Check how layers are added to python lambdas
-- Create ORM layers
-
 Lambdas:
     - crud course
     - crud class
@@ -10,3 +6,4 @@ Lambdas:
     - calculate course progress
     - get course progress
     
+- Add field 'name' to table Course

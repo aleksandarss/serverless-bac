@@ -1,0 +1,57 @@
+service: db-migration
+
+plugins:
+  - serverless-python-requirements
+provider:
+  name: aws
+  runtime: python3.7
+  stackTags:
+    Project: sasa-project
+  deploymentBucket:
+    name: sasa-project-deployment-bucket
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - rds-data:ExecuteStatement
+        - rds-data:BeginTransaction
+        - rds-data:RollbackTransaction
+        - rds-data:CommitTransaction
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource: "*"
+
+custom:
+  DBClusterARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+    # Fn::Join:
+    #   - ':'
+    #   - - 'arn:aws:rds'
+    #     - Ref: 'AWS::Region'
+    #     - Ref: 'AWS::AccountId'
+    #     - 'cluster'
+    #     - Fn::ImportValue: 'e-learning-infra.rdsCluster'
+  pythonRequirements:
+    dockerizePip: non-linux
+
+functions:
+  DBMigration:
+    name: DBMigration
+    description: Executes DB Schema Migrations.
+    handler: db.handler
+    memorySize: 512
+    timeout: 100
+    environment:
+      DB_CLUSTER_ARN:
+        ${self:custom.DBClusterARN}
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+
+package:
+  exclude:
+    - node_modules/**
+    - set_env_vars.sh
+    - package.json
+    - package-lock.json
+    - README.md

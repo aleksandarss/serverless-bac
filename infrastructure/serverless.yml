@@ -1,0 +1,20 @@
+service: e-learning-infra
+
+provider:
+  name: aws
+  stackName: ${self:service}
+  region: us-east-1
+  stackTags:
+    Project: sasa-project
+  deploymentBucket:
+    name: sasa-project-deployment-bucket
+functions:
+
+resources:
+  - ${file(resources/stackinfo.yml)}
+  # VPC
+  - ${file(resources/vpc/vpc.yml)}
+  # RDS Aurora Serverless
+  - ${file(resources/rds/auroraServerless.yml)}
+  # API Gateway
+  - ${file(resources/apigateway/apiGateway.yml)}

@@ -1,0 +1,27 @@
+Resources:
+  cloudFormationDeployUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      Path: '/'
+      Policies:
+        - PolicyName: cloudformation-deploy-role
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                  - rds:*
+                  - vpc:*
+                  - lambda:*
+                  - logs:*
+                  - iam:*
+                  - cloudformation:*
+                  - ec2:*
+                  - secretsmanager:*
+                  - apigateway:*
+                Resource: 
+                  - '*'
+      Tags:
+        - Key: Project
+          Value: sasa-project
