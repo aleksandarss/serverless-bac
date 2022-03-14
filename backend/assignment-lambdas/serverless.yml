@@ -1,0 +1,99 @@
+service: assignment-service
+
+plugins:
+  - serverless-python-requirements
+provider:
+  name: aws
+  region: us-east-1
+  stackName: assignment-service
+  runtime: python3.8
+  stackTags:
+    Project: sasa-project
+  apiGateway:
+    restApiId: ${cf:e-learning-infra.apiGatewayId}
+    restApiRootResourceId: ${cf:e-learning-infra.apiGatewayResourceId}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - rds-data:*
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource: "*"
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+layers:
+  db:
+    path: ../layers/db-layer
+
+functions:
+  createAssignment:
+    handler: create-assignment/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /assignment/
+          method: post
+          cors: true
+  getAssignment:
+    handler: get-assignment/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /assignment/{assignment_id}
+          method: get
+          cors: true
+  listAssignment:
+    handler: list-assignments/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /assignment
+          method: get
+          cors: true
+          request:
+            application/json: '{ "limit" : "$input.params(''limit'')", "offset": "$input.params(''offset'')", "course_id": "$input.params(''course_id'')" }'
+  deleteAssignment:
+    handler: delete-assignment/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /assignment/{assignment_id}
+          method: delete
+          cors: true
+
+package:
+  exclude:
+    - node_modules/**
+    - set_env_vars.sh
+    - package.json
+    - package-lock.json
+    - README.md

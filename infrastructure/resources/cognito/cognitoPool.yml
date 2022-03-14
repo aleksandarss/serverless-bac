@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties: 
+      UserPoolName: elearning-userpool
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      SupportedIdentityProviders:
+        - COGNITO
+      AllowedOAuthFlows:
+        - implicit
+      GenerateSecret: true
+      ExplicitAuthFlows: 
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      AllowedOAuthScopes:
+        - openid
+      CallbackURLs:
+        - http://localhost
+      LogoutURLs:
+        - http://localhost
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref UserPool 
+      Domain: "test-user-pool-domain-123"
+
+Outputs:
+  userPoolId:
+    Description: The id of user pool
+    Value: !Ref UserPool
+    Export:
+      Name: elearning-userpool-id
+  userPoolClientId:
+    Description: The id of the user pool client
+    Value: !Ref UserPoolClient
+    Export:
+      Name: elearning-userpool-client-id
+  userPoolArn:
+    Description: The arn of the user pool
+    Value: !GetAtt UserPool.Arn
+    Export:
+      Name: elearning-userpool-arn

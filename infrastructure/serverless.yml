@@ -18,3 +18,5 @@ resources:
   - ${file(resources/rds/auroraServerless.yml)}
   # API Gateway
   - ${file(resources/apigateway/apiGateway.yml)}
+  # COGNITO User pool
+  - ${file(resources/cognito/cognitoPool.yml)}

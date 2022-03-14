@@ -1,0 +1,84 @@
+service: users-service
+
+plugins:
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  region: us-east-1
+  stackName: user-service
+  runtime: python3.8
+  stackTags:
+    Project: sasa-project
+  apiGateway:
+    restApiId: ${cf:e-learning-infra.apiGatewayId}
+    restApiRootResourceId: ${cf:e-learning-infra.apiGatewayResourceId}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - rds-data:*
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource: "*"
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+layers:
+  db:
+    path: ../layers/db-layer
+
+functions:
+  getMe:
+    handler: get-me/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /users/me
+          method: get
+          cors: true
+  getUsers:
+    handler: get-course/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /users/
+          method: get
+          cors: true
+  getUser:
+    handler: get-course/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /users/{user_id}
+          method: get
+          cors: true
+
+package:
+  exclude:
+    - node_modules/**
+    - set_env_vars.sh
+    - package.json
+    - package-lock.json
+    - README.md

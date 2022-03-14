@@ -1,0 +1,17 @@
+service: sls-delete-product
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    restApiId: ${cf:sls-api-gateway-dev.apiGatewayId}
+    restApiRootResourceId: ${cf:sls-api-gateway-dev.apiGatewayResourceId}
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - http:
+          path: /
+          method: delete
+          cors: true

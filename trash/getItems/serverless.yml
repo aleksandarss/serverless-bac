@@ -1,0 +1,27 @@
+service: sls-get-item
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    restApiId: ${cf:sls-api-gateway-dev.apiGatewayId}
+    restApiRootResourceId: ${cf:sls-api-gateway-dev.apiGatewayResourceId}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+      Resource: ${cf:sls-dynamo-db-${opt:stage}.ItemTableArn}
+
+functions:
+  api:
+    handler: lambda.handler
+    environment: 
+      TABLE_NAME: sls-items
+    events:
+      - http:
+          path: /item-get/{itemId}
+          method: get
+          cors: true
+          authorizer:
+            name: ${self:service}-authorizer
+            arn: ${cf:sls-cognito-${opt:stage}.userPoolArn}

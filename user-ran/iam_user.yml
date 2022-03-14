@@ -20,6 +20,7 @@ Resources:
                   - ec2:*
                   - secretsmanager:*
                   - apigateway:*
+                  - cognito-idp:*
                 Resource: 
                   - '*'
       Tags:
