@@ -8,6 +8,7 @@ class Class(Base):
     __tablename__ = 'classes'
 
     id = Column('id', Integer, primary_key=True)
+    title = Column('title', String)
     text = Column('text', String)
     class_id = Column('Integer', ForeignKey('classes.id'))
     assignments = relationship('Assignment')

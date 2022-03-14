@@ -46,3 +46,83 @@ functions:
           path: /v1/course/
           method: post
           cors: true
+  getCourse:
+    handler: get-course/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /v1/course/{course_id}
+          method: get
+          cors: true
+  listCourse:
+    handler: list-courses/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /v1/course
+          method: get
+          cors: true
+          request:
+            application/json: '{ "limit" : "$input.params(''limit'')", "offset": "$input.params(''offset'')" }'
+  deleteCourse:
+    handler: delete-course/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /v1/course/{course_id}
+          method: delete
+          cors: true
+  startCourse:
+    handler: start-course/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /v1/course/{course_id}/start
+          method: post
+          cors: true
+  progressCourse:
+    handler: progress-course/main.handler
+    layers:
+      - { Ref: DbLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /v1/course/{course_id}/user/{user_id}/progress
+          method: put
+          cors: true
+
+package:
+  exclude:
+    - node_modules/**
+    - set_env_vars.sh
+    - package.json
+    - package-lock.json
+    - README.md
