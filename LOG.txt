@@ -1,0 +1,11 @@
+- npm install -g amplify
+- amplify configure: 
+    - created new iam user: amplify-xxxxx
+    - added profile 'amplify' to aws config
+- amplify init:
+    - a signup role was created
+    - a sign in role was created
+    - an s3 bucket was created
+- amplify import auth
+    - imported user pool
+    - had to add web app without secret to user pool manually
