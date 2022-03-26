@@ -45,10 +45,10 @@ class Class(Base):
 class TakeCourse(Base):
     __tablename__ = 'take_course'
 
-    id = Column('id', primary_key=True, autoincrement=True)
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
     user_id = Column('user_id', ForeignKey('users.id'))
     course_id = Column('course_id', ForeignKey('courses.id'))
-    progress = Column('progress', Integer)
+    progress = Column('progress', Integer, nullable=True)
     user = relationship('User', backref=backref("course_assoc"))
     course = relationship('Course', backref=backref("user_assoc"))
 

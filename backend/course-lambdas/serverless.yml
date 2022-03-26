@@ -38,6 +38,7 @@ functions:
     handler: create-course/main.handler
     layers:
       - { Ref: DbdepsLambdaLayer }
+      - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -67,6 +68,7 @@ functions:
     handler: list-courses/main.handler
     layers:
       - { Ref: DbdepsLambdaLayer }
+      - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -83,6 +85,7 @@ functions:
     handler: delete-course/main.handler
     layers:
       - { Ref: DbdepsLambdaLayer }
+      - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -97,6 +100,7 @@ functions:
     handler: start-course/main.handler
     layers:
       - { Ref: DbdepsLambdaLayer }
+      - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -111,6 +115,7 @@ functions:
     handler: progress-course/main.handler
     layers:
       - { Ref: DbdepsLambdaLayer }
+      - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 

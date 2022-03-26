@@ -28,7 +28,7 @@ def take_course(event):
         req = json.loads(event['body'])
         course_id = event['pathParameters']['course_id']
         start_course = TakeCourse(
-            user_id = req['user_id'],
+            user_id = req['student_id'],
             course_id = int(course_id),
             progress = 0
         )
