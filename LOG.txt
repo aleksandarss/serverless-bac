@@ -9,3 +9,17 @@
 - amplify import auth
     - imported user pool
     - had to add web app without secret to user pool manually
+
+** ASSIGNMENTS **
+* All assignments are 5 points worth
+* There are no partially correct answers
+* 
+
+** TEST **
+- Start-test only writes entry into the DB
+- The logic for doing assignments is in /do-assignment route
+
+** OPEN QUESTIONS **
+Q: How to know that the test ended?
+A: Look at the number of assignments user completed vs number of assignments that belong to that test.
+   Do check after every /do-assignment call 

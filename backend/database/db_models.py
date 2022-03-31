@@ -4,33 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class Assignment(Base):
-    __tablename__ = 'assignments'
-
-    id = Column('id', Integer, primary_key=True)
-    text = Column('text', String)
-    answer = Column('answer', String)
-    points = Column('points', Integer)
-    test_id = Column(Integer, ForeignKey('tests.id'))
-
-    def as_dict(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-class Test(Base):
-    __tablename__ = 'tests'
-
-    id = Column('id', Integer, primary_key=True)
-    title = Column('title', String)
-    text = Column('text', String)
-    total_points = Column('total_points', Integer)
-    assignments = relationship(Assignment)
-    course_id = Column('course_id', ForeignKey('courses.id'))
-
-    def as_dict(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-
-
 class Class(Base):
     __tablename__ = 'classes'
 
@@ -66,6 +39,47 @@ class TakeTest(Base):
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
+class DoAssignment(Base):
+    __tablename__ = 'do_assignment'
+
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    achieved_points = Column('achieved_points', Integer, nullable=True)
+    user_id = Column('user_id', ForeignKey('users.id')),
+    assignment_id = Column('assignment_id', ForeignKey('assignments.id'))
+
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Assignment(Base):
+    __tablename__ = 'assignments'
+
+    id = Column('id', Integer, primary_key=True)
+    text = Column('text', String)
+    answer = Column('answer', String)
+    points = Column('points', Integer)
+    test_id = Column(Integer, ForeignKey('tests.id'))
+    do_assignment = relationship(DoAssignment, secondary='do_assignment')
+
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Test(Base):
+    __tablename__ = 'tests'
+
+    id = Column('id', Integer, primary_key=True)
+    title = Column('title', String)
+    text = Column('text', String)
+    total_points = Column('total_points', Integer)
+    assignments = relationship(Assignment)
+    course_id = Column('course_id', ForeignKey('courses.id'))
+
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
 class Course(Base):
     __tablename__ = 'courses'
 
@@ -80,6 +94,7 @@ class Course(Base):
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -89,9 +104,10 @@ class User(Base):
     first_name = Column('first_name', VARCHAR(1024))
     last_name = Column('last_name', VARCHAR(1024))
     role = Column('role', String)
-    # tests = relationship(TakeTest)
+    tests = relationship(TakeTest, secondary='take_test')
     courses = relationship(Course, secondary='take_course')
     course_teach = relationship(Course)
+    do_assignment = relationship(DoAssignment, secondary='do_assignment')
 
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

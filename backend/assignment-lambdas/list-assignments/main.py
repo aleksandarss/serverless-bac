@@ -28,6 +28,9 @@ def list_assignments(event):
         offset = event['queryStringParameters']['offset']
         limit = event['queryStringParameters']['limit']
 
+        if 'test_id' in event['queryStringParameters']:
+            pass
+
         assignments = session.query(Assignment).offset(offset).limit(limit).all()
         response = { 'assignments': [] }
 

@@ -23,38 +23,22 @@ def get_db_session():
 
 session = get_db_session()
 
-def get_assignments():
-    pass
-
-
-def do_assignment():
-    pass
-
-
-def check_assignments():
-    pass
-
-
-
-
-
-def create_test(event):
+def start_test(event):
     try:
         req = json.loads(event['body'])
-        test = Test(
-            title = req['title'],
-            text = req['text'],
-            total_points = req['total_points'],
-            course_id = req['course_id']
+        startTest = TakeTest(
+            points = 0,
+            user_id = req['student_id'],
+            test_id = req['test_id']
         )
 
-        session.add(test)
+        session.add(startTest)
         session.commit()
-        session.refresh(test)
+        session.refresh(startTest)
 
         return {
             "statusCode": 200,
-            "body": json.dumps(test.as_dict())
+            "body": json.dumps(startTest.as_dict())
         }
     except Exception as e:
         return {
@@ -64,7 +48,7 @@ def create_test(event):
 
 def handler(event, context):
     if (event['httpMethod'] == 'POST'):
-        response = create_test(event)
+        response = start_test(event)
     else:
         raise Exception(f"No handler for http verb: {event['httpMethod']}")
         
