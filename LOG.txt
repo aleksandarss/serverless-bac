@@ -23,3 +23,12 @@
 Q: How to know that the test ended?
 A: Look at the number of assignments user completed vs number of assignments that belong to that test.
    Do check after every /do-assignment call 
+
+03.04.2022
+
+Problem:
+ - Detected error: No module named '_tkinter'.
+ - Only reference to 'tkinter' found in dpdeps layer, no idea how it got installed. 
+Solutions:
+ - Removed six.py from dbdeps/python
+

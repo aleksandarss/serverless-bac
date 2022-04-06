@@ -27,14 +27,17 @@ custom:
     dockerizePip: non-linux
 
 layers:
-  db:
-    path: ../layers/db-layer
+  dbdeps:
+    path: ../layers/db-deps
+  # dborm:
+  #   path: ../layers/db-orm
 
 functions:
   createAssignment:
     handler: create-assignment/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
+      # - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -48,7 +51,8 @@ functions:
   getAssignment:
     handler: get-assignment/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
+      # - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -62,7 +66,8 @@ functions:
   listAssignment:
     handler: list-assignments/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
+      # - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -78,7 +83,8 @@ functions:
   deleteAssignment:
     handler: delete-assignment/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
+      # - { Ref: DbormLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -88,6 +94,21 @@ functions:
       - http:
           path: /assignment/{assignment_id}
           method: delete
+          cors: true
+  doAssignment:
+    handler: do-assignment/main.handler
+    layers:
+      - { Ref: DbdepsLambdaLayer }
+      # - { Ref: DbormLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /assignment/do
+          method: post
           cors: true
 
 package:

@@ -60,13 +60,20 @@ def do_assignment(userId, assignmentId, achievedPoints):
             "error": f"Error: {e}"
         }
 
-def check_test_status(testId):
-    assignments = Assignment.query.join(DoAssignment).filter(and_(Assignment.test_id == testId))
+def check_test_status(testId, userId):
+    assignments_done = Assignment.query.join(DoAssignment).filter(and_(Assignment.test_id == testId, DoAssignment.user_id == userId))
+    logger.info(f'User: {userId} did following assignments: {assignments_done}')
+    assignments_total = Assignment.query.join(Test).filter(Assignment.test_id == testId)
+    logger.info(f'For test: {testId} following assignments are assigned: {assignments_total}')
+
 
 
 def handler(event, context):
     req = json.loads(event["body"])
+
     assignment = get_assignment(req["assignment_id"])
+    logger.info(f'Found assignment: {assignment}')
+    check_test_status(assignment['test_id'], req['user_id'])
     
     # Check answer
     if req["answer"] == assignment["answer"]:
