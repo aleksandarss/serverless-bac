@@ -1,0 +1,7 @@
+boto3
+crhelper==2.0.5
+
+# sqlalchemy and Data API dialect
+sqlalchemy
+sqlalchemy-aurora-data-api
+aurora-data-api==0.4.0

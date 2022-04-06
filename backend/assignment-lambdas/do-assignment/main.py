@@ -25,20 +25,24 @@ def get_db_session():
 session = get_db_session()
 
 def get_assignment(assignmentId):
+    logger.debug(f'invoking get-assignment lambda with path param: {assignmentId}')
     lambdaClient = boto3.client('lambda')
     response = lambdaClient.invoke(
-        FunctionName=f'{os.getenv("SERVICE_NAME")}-{os.getenv("STAGE")}-getAssignment',
+        FunctionName='assignment-service-dev-getAssignment', # f'{os.getenv("SERVICE_NAME")}-{os.getenv("STAGE")}-getAssignment',
         InvocationType='RequestResponse',
-        Payload={
+        Payload=json.dumps({
             "pathParameters": {
                 "assignment_id": assignmentId 
             }
-        }
+        })
     )
-    return response["body"]
+    result = json.loads(response['Payload'].read())
+    logger.debug(f'received response from get-assignment lambda: {result}')
+    return result
 
 
 def do_assignment(userId, assignmentId, achievedPoints):
+    logger.debug('inserting doAssignment into db ...')
     try:
         doAssignment = DoAssignment(
             achieved_points = achievedPoints,
@@ -61,6 +65,7 @@ def do_assignment(userId, assignmentId, achievedPoints):
         }
 
 def check_test_status(testId, userId):
+    logger.debug(f'checking test status for test: {testId} user: {userId}')
     assignments_done = Assignment.query.join(DoAssignment).filter(and_(Assignment.test_id == testId, DoAssignment.user_id == userId))
     logger.info(f'User: {userId} did following assignments: {assignments_done}')
     assignments_total = Assignment.query.join(Test).filter(Assignment.test_id == testId)
@@ -72,7 +77,7 @@ def handler(event, context):
     req = json.loads(event["body"])
 
     assignment = get_assignment(req["assignment_id"])
-    logger.info(f'Found assignment: {assignment}')
+
     check_test_status(assignment['test_id'], req['user_id'])
     
     # Check answer
