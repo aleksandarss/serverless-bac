@@ -33,12 +33,13 @@ def get_assignment(assignmentId):
         Payload=json.dumps({
             "pathParameters": {
                 "assignment_id": assignmentId 
-            }
+            },
+            "httpMethod": 'GET'
         })
     )
     result = json.loads(response['Payload'].read())
     logger.debug(f'received response from get-assignment lambda: {result}')
-    return result
+    return json.loads(result['body'])
 
 
 def do_assignment(userId, assignmentId, achievedPoints):
