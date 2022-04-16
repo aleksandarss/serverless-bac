@@ -27,14 +27,14 @@ custom:
     dockerizePip: non-linux
 
 layers:
-  db:
-    path: ../layers/db-layer
+  dbdeps:
+    path: ../layers/db-layer-new
 
 functions:
   createTest:
     handler: create-test/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -48,7 +48,7 @@ functions:
   getTest:
     handler: get-test/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -62,7 +62,7 @@ functions:
   listTest:
     handler: list-courses/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -78,7 +78,7 @@ functions:
   deleteTest:
     handler: delete-test/main.handler
     layers:
-      - { Ref: DbLambdaLayer }
+      - { Ref: DbdepsLambdaLayer }
     environment:
       DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
       DB_SECRET_ARN: 
@@ -88,6 +88,20 @@ functions:
       - http:
           path: /test/{course_id}
           method: delete
+          cors: true
+  completeTest:
+    handler: complete-test/main.handler
+    layers:
+      - { Ref: DbdepsLambdaLayer }
+    environment:
+      DB_CLUSTER_ARN: 'arn:aws:rds:us-east-1:832311466616:cluster:aurora-postgresql-cluster-v1'
+      DB_SECRET_ARN: 
+        ${cf:e-learning-infra.rdsClusterSecretArn}
+      DB_NAME: 'elearning'
+    events:
+      - http:
+          path: /test/complete-test
+          method: post
           cors: true
 
 package:

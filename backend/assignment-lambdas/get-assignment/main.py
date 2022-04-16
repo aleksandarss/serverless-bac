@@ -27,7 +27,8 @@ def get_assignment(event):
     try:
         assignment_id = event['pathParameters']['assignment_id']
 
-        assignment = session.query(Assignment).get(int(assignment_id))
+        # assignment = session.query(Assignment).get(int(assignment_id))
+        assignment = session.query(Assignment).filter(Assignment.id == assignment_id).first()
 
         return {
             "statusCode": 200,

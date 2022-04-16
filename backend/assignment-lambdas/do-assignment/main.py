@@ -65,13 +65,45 @@ def do_assignment(userId, assignmentId, achievedPoints):
             "error": f"Error: {e}"
         }
 
+"""
+Checks if all the assignments are already done.
+returns:
+True if the assignment can be done - done assignment count is < total assignment count
+Fals if the assignment can't be done - done assignment count is == total assignment count
+"""
 def check_test_status(testId, userId):
     logger.debug(f'checking test status for test: {testId} user: {userId}')
-    assignments_done = Assignment.query.join(DoAssignment).filter(and_(Assignment.test_id == testId, DoAssignment.user_id == userId))
+    assignments_done = session.query(DoAssignment).join(Assignment).filter(and_(
+        Assignment.test_id == testId,
+        DoAssignment.user_id == userId
+    )).all()
     logger.info(f'User: {userId} did following assignments: {assignments_done}')
-    assignments_total = Assignment.query.join(Test).filter(Assignment.test_id == testId)
-    logger.info(f'For test: {testId} following assignments are assigned: {assignments_total}')
+    logger.info(f'User: {userId} did {len(assignments_done)}#')
+    assignments_total = session.query(Assignment).join(Test).filter(Assignment.test_id == testId).all()
+    for assignment in assignments_total:
+        print("ASSIGNMENT: ", assignment.__dict__)
 
+    if len(assignments_done) == len(assignments_total):
+        return False
+    else:
+        return True
+
+
+def complete_test(testId, userId):
+    logger.debug(f'invoking complete-test lambda')
+    lambdaClient = boto3.client('lambda')
+    response = lambdaClient.invoke(
+        FunctionName='test-service-dev-completeTest', 
+        InvocationType='RequestResponse',
+        Payload=json.dumps({
+            "body": {
+                "test_id": testId,
+                "user_id": userId
+            },
+        })
+    )
+    result = json.loads(response['Payload'].read())
+    logger.debug(f'received response from complete-test lambda: {result}')
 
 
 def handler(event, context):
@@ -79,17 +111,23 @@ def handler(event, context):
 
     assignment = get_assignment(req["assignment_id"])
 
-    check_test_status(assignment['test_id'], req['user_id'])
-    
-    # Check answer
-    if req["answer"] == assignment["answer"]:
-        points = assignment["points"]
-    else:
-        points = 0
-
-    if (event['httpMethod'] == 'POST'):
+    if check_test_status(assignment['test_id'], req['user_id']):
+        # Check answer
+        if req["answer"] == assignment["answer"]:
+            points = assignment["points"]
+        else:
+            points = 0
         response = do_assignment(req["user_id"], req["assignment_id"], points)
+        
+        # Check if test done after this assignment
+        if not check_test_status(assignment['test_id'], req['user_id']):
+            # Complete test
+            complete_test(assignment['test_id'], req['user_id'])
+
     else:
-        raise Exception(f"No handler for http verb: {event['httpMethod']}")
+        return {
+            "statusCode": 400,
+            "body": json.dumps({"error": "You have already done all assignments for this test!"})
+        }
         
     return response
