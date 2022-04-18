@@ -21,6 +21,18 @@ provider:
       Action:
         - secretsmanager:GetSecretValue
       Resource: "*"
+    # For complete test
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+        - sqs:SendMessage
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "*"
 
 custom:
   pythonRequirements:
@@ -98,11 +110,10 @@ functions:
       DB_SECRET_ARN: 
         ${cf:e-learning-infra.rdsClusterSecretArn}
       DB_NAME: 'elearning'
+      PROGRESS_COURSE_QUEUE_URL: 
+        ${cf:e-learning-infra.ProgressCourseQueueURL}
     events:
-      - http:
-          path: /test/complete-test
-          method: post
-          cors: true
+      - sqs: ${cf:e-learning-infra.CompleteTestQueueARN}
 
 package:
   exclude:

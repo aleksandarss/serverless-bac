@@ -12,6 +12,7 @@ db_cluster_arn = os.getenv('DB_CLUSTER_ARN')
 secret_arn = os.getenv('DB_SECRET_ARN')
 database_name = os.getenv('DB_NAME')
 secrets_client = boto3.client('secretsmanager')
+sqs_client = boto3.client('sqs')
 
 # Get SQLAlchemy Session
 def get_db_session():
@@ -24,14 +25,13 @@ def get_db_session():
 
 session = get_db_session()
 
-def complete_test(event, points):
+def complete_test(body, points):
     try:
-        logger.info(f"inserted TakeTest with points: [{points}] into the db ...")
-        req = event['body']
+        logger.info(f"inserting TakeTest with points: [{points}] into the db ...")
         completeTest = TakeTest(
             points = points,
-            user_id = int(req['user_id']),
-            test_id = int(req['test_id'])
+            user_id = int(body['user_id']),
+            test_id = int(body['test_id'])
         )
 
         session.add(completeTest)
@@ -62,12 +62,45 @@ def calculate_points(testId, userId):
 
     return total_points
 
+def get_test(testId):
+    logger.debug(f'invoking get-test lambda')
+    lambdaClient = boto3.client('lambda')
+    response = lambdaClient.invoke(
+        FunctionName='test-service-dev-getTest', 
+        InvocationType='RequestResponse',
+        Payload=json.dumps({
+            "pathParameters": {
+                "test_id": testId
+            },
+            "httpMethod": 'GET'
+        })
+    )
+    result = json.loads(response['Payload'].read())
+    logger.debug(f'received response from get-test lambda: {result}')
+    return json.loads(result['body'])
+
+
+def progress_course(testId, userId, achievedPoints):
+    logger.info(f'Sending message to queue to progress course for user: {userId}')
+    test = get_test(testId)
+    if achievedPoints >= test['total_points'] / 2:
+        logger.info(f'Sending complete test body to queue: {os.getenv("PROGRESS_COURSE_QUEUE_URL")}')
+        response = sqs_client.send_message(
+            QueueUrl=os.getenv('PROGRESS_COURSE_QUEUE_URL'),
+            MessageBody=f'{{ "course_id": {test["course_id"]}, "user_id": {userId} }}'
+        )
+        logger.info(f'Received response from queue: {response}') 
+
 
 def handler(event, context):
     print(event)
-    req = event['body']
-    total_points = calculate_points(req['test_id'], req['user_id'])
-    response = complete_test(event, total_points)
-        
-    return response
+    response = {}
+    records = event['Records']
 
+    for record in records:
+        body = json.loads(record['body'])
+        achievedPoints = calculate_points(body['test_id'], body['user_id'])
+        response = complete_test(body, achievedPoints)
+        progress_course(body['test_id'], body['user_id'], achievedPoints)
+    
+    return response

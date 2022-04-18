@@ -20,3 +20,5 @@ resources:
   - ${file(resources/apigateway/apiGateway.yml)}
   # COGNITO User pool
   - ${file(resources/cognito/cognitoPool.yml)}
+  # Supporting infrastructure: SQS, ...
+  - ${file(resources/supporting-infra/sqs.yml)}

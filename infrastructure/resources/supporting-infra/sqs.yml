@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  CompleteTestQueue:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: "CompleteTestQueue"
+      Tags:
+        - Key: Project
+          Value: sasa-project
+
+  ProgressCourseQueue:
+    Type: AWS::SQS::Queue
+    Properties: 
+      QueueName: "ProgressCourseQueue"
+      Tags:
+        - Key: Project
+          Value: sasa-project
+
+Outputs:
+  CompleteTestQueueURL: 
+    Description: "URL of the CompleteTest Amazon SQS Queue"
+    Value: 
+      Ref: CompleteTestQueue
+  CompleteTestQueueARN: 
+    Description: "ARN of CompleteTest AmazonSQS Queue"
+    Value: 
+      Fn::GetAtt: 
+        - "CompleteTestQueue"
+        - "Arn"
+  CompleteTestQueueName: 
+    Description: "Name of CompleteTest Amazon SQS Queue"
+    Value: 
+      Fn::GetAtt: 
+        - "CompleteTestQueue"
+        - "QueueName"
+  ProgressCourseQueueURL: 
+    Description: "URL of the CompleteTest Amazon SQS Queue"
+    Value: 
+      Ref: ProgressCourseQueue
+  ProgressCourseQueueARN: 
+    Description: "ARN of CompleteTest AmazonSQS Queue"
+    Value: 
+      Fn::GetAtt: 
+        - "ProgressCourseQueue"
+        - "Arn"
+  ProgressCourseQueueName: 
+    Description: "Name of CompleteTest Amazon SQS Queue"
+    Value: 
+      Fn::GetAtt: 
+        - "ProgressCourseQueue"
+        - "QueueName"

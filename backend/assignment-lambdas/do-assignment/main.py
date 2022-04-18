@@ -12,6 +12,7 @@ db_cluster_arn = os.getenv('DB_CLUSTER_ARN')
 secret_arn = os.getenv('DB_SECRET_ARN')
 database_name = os.getenv('DB_NAME')
 secrets_client = boto3.client('secretsmanager')
+sqs_client = boto3.client('sqs')
 
 # Get SQLAlchemy Session
 def get_db_session():
@@ -90,20 +91,13 @@ def check_test_status(testId, userId):
 
 
 def complete_test(testId, userId):
-    logger.debug(f'invoking complete-test lambda')
-    lambdaClient = boto3.client('lambda')
-    response = lambdaClient.invoke(
-        FunctionName='test-service-dev-completeTest', 
-        InvocationType='RequestResponse',
-        Payload=json.dumps({
-            "body": {
-                "test_id": testId,
-                "user_id": userId
-            },
-        })
+    logger.info(f'Sending complete test body to queue: {os.getenv("COMPLETE_TEST_QUEUE_URL")}')
+    response = sqs_client.send_message(
+        QueueUrl=os.getenv('COMPLETE_TEST_QUEUE_URL'),
+        MessageBody=f'{{ "test_id": {testId}, "user_id": {userId} }}'
     )
-    result = json.loads(response['Payload'].read())
-    logger.debug(f'received response from complete-test lambda: {result}')
+    logger.info(f'Received response from queue: {response}')
+
 
 
 def handler(event, context):

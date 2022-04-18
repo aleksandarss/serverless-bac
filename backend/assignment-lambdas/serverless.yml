@@ -25,6 +25,11 @@ provider:
       Action:
         - lambda:InvokeFunction
       Resource: "*"
+    # For doAssignment
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+      Resource: "*"
 
 custom:
   pythonRequirements:
@@ -109,6 +114,8 @@ functions:
       DB_SECRET_ARN: 
         ${cf:e-learning-infra.rdsClusterSecretArn}
       DB_NAME: 'elearning'
+      COMPLETE_TEST_QUEUE_URL:
+        ${cf:e-learning-infra.CompleteTestQueueURL}
     events:
       - http:
           path: /assignment/do

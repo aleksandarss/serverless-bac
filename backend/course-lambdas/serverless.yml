@@ -22,6 +22,12 @@ provider:
       Action:
         - secretsmanager:GetSecretValue
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+      Resource: "*"
 
 custom:
   pythonRequirements:
@@ -122,10 +128,7 @@ functions:
         ${cf:e-learning-infra.rdsClusterSecretArn}
       DB_NAME: 'elearning'
     events:
-      - http:
-          path: /v1/course/{course_id}/user/{user_id}/progress
-          method: put
-          cors: true
+      - sqs: ${cf:e-learning-infra.ProgressCourseQueueARN}
 
 package:
   exclude:
