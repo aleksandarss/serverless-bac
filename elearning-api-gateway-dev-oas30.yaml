@@ -1,0 +1,273 @@
+openapi: "3.0.1"
+info:
+  title: "elearning-api-gateway"
+  version: "2022-04-18T09:04:14Z"
+servers:
+- url: "https://lzyohwhgtd.execute-api.us-east-1.amazonaws.com/{basePath}"
+  variables:
+    basePath:
+      default: "/dev"
+paths:
+  /class:
+    get: {}
+    post: {}
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /assignment/{assignment_id}:
+    get:
+      parameters:
+      - name: "assignment_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    delete:
+      parameters:
+      - name: "assignment_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    options:
+      parameters:
+      - name: "assignment_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /v1/course/{course_id}/start:
+    post:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    options:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /assignment:
+    get: {}
+    post: {}
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /class/{class_id}:
+    get:
+      parameters:
+      - name: "class_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    delete:
+      parameters:
+      - name: "class_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    options:
+      parameters:
+      - name: "class_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /v1/course:
+    get: {}
+    post: {}
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /assignment/do:
+    post: {}
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /v1/course/{course_id}:
+    get:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    delete:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    options:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /test:
+    get: {}
+    post: {}
+    options:
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+  /test/{course_id}:
+    get:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    delete:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+    options:
+      parameters:
+      - name: "course_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
+components: {}
